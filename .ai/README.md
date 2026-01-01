@@ -13,3 +13,9 @@ This repository includes a minimal AI-friendly workflow scaffold.
 2) Implement (GREEN)
 3) Ensure gates are green
 4) Open a single PR
+
+## Prompts
+- Core prompts: .ai/prompts/core/ (project-agnostic; do not edit)
+- Project overlay: .ai/project/overlay.md (edit per project)
+
+Recommended usage is to provide "core + overlay" together as the agent context.
