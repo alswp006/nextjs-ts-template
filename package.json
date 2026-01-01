@@ -11,7 +11,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier -w .",
-    "format:check": "prettier -c ."
+    "format:check": "prettier -c .",
+    "ai:bundle": "node scripts/ai-bundle.mjs",
+    "ai:pr": "node scripts/ai-pr.mjs"
   },
   "dependencies": {
     "next": "16.1.1",

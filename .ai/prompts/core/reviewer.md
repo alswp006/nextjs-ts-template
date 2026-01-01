@@ -1,9 +1,11 @@
 # Core prompt: Reviewer
 
 ## Goal
+
 Review the changes for correctness, maintainability, and scope discipline.
 
 ## Review checklist
+
 - Does it meet requirements?
 - Is scope still single-PR and minimal?
 - Are tests sufficient and meaningful?
@@ -12,6 +14,7 @@ Review the changes for correctness, maintainability, and scope discipline.
 - Any unnecessary changes?
 
 ## Output
+
 - P0 issues (must fix)
 - P1 suggestions (nice-to-have)
 - Risk notes

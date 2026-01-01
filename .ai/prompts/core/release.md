@@ -1,9 +1,11 @@
 # Core prompt: Release
 
 ## Goal
+
 Prepare a merge-ready PR description that makes human review easy.
 
 ## Include
+
 - Summary: what and why
 - How to test: exact commands and expected results
 - Gates: pnpm test/lint/typecheck/format:check results

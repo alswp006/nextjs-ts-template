@@ -2,3 +2,22 @@
 # AI tooling
 .ai/tmp
 .ai/logs
+
+# dependencies / build
+node_modules/
+.next/
+out/
+build/
+
+# caches
+*.tsbuildinfo
+
+# local env
+.env
+.env.local
+.env.*.local
+
+# ai local artifacts
+.ai/PROMPT_BUNDLE.md
+patch.diff
+
