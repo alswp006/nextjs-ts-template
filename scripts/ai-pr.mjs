@@ -23,7 +23,7 @@ if (!fs.existsSync("patch.diff")) {
 }
 
 console.log("\n[ai-pr] applying patch.diff ...\n");
-run("git", ["apply", "-p0", "patch.diff"]);
+run("git", ["apply", "--whitespace=fix", "-p1", "patch.diff"]);
 
 console.log("\n[ai-pr] running quality gates ...\n");
 run("pnpm", ["test"]);

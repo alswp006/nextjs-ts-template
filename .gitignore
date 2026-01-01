@@ -20,4 +20,5 @@ build/
 # ai local artifacts
 .ai/PROMPT_BUNDLE.md
 patch.diff
-
+.ai/PR_BODY.md
+.ai/last-output.txt
