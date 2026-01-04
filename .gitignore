@@ -21,6 +21,8 @@ build/
 # ai local artifacts
 # AI local inputs & outputs
 .ai/PR_BODY*.md
+.ai/gates.log
+.ai/gates.last.log
 .ai/last-output.txt
 .ai/PROMPT_BUNDLE.md
 patch.diff
