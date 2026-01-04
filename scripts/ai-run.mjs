@@ -302,10 +302,10 @@ async function callAgent({
 
   const diffBlocks = extractAllCodeBlocks(out, "diff");
   const mdBlocks = [
-  ...extractAllCodeBlocks(out, "md"),
-  ...extractAllCodeBlocks(out, "markdown"),
-  ...extractAllCodeBlocks(out, "mdx"),
-];
+    ...extractAllCodeBlocks(out, "md"),
+    ...extractAllCodeBlocks(out, "markdown"),
+    ...extractAllCodeBlocks(out, "mdx"),
+  ];
 
   const diff = pickBestDiff(diffBlocks);
   const prBodyEn = pickBestMd(mdBlocks);
