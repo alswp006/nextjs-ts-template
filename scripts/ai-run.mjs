@@ -303,7 +303,14 @@ async function callAgent({
   await fs.writeFile(PR_BODY_PATH, koBody + "\n", "utf8");
 
   // Check applicability
-  const ok = runCheck("git", ["apply", "--check", "-p1", PATCH_PATH]);
+  const ok = runCheck("git", [
+    "apply",
+    "--check",
+    "--recount",
+    "--whitespace=nowarn",
+    "-p1",
+    PATCH_PATH,
+  ]);
   if (!ok) {
     throw new Error(
       `Generated patch is not applicable. See ${LAST_OUTPUT_PATH} and ${PATCH_PATH}`,

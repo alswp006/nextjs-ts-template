@@ -144,11 +144,24 @@ function main() {
   }
 
   // patch 적용(whitespace 경고는 nowarn)
-  const apply = run(
+  const check = run(
     "git",
-    ["apply", "--whitespace=nowarn", "-p1", PATCH_FILE],
+    ["apply", "--check", "--recount", "--whitespace=nowarn", "-p1", PATCH_FILE],
     { capture: true },
   );
+
+  if (check.status !== 0) {
+    writeGatesLog(`[git apply --check failed]\n${check.stderr}\n`);
+    rollback({ baseBranch, baseSha, branch });
+    process.exit(check.status);
+  }
+
+  const apply = run(
+    "git",
+    ["apply", "--recount", "--whitespace=nowarn", "-p1", PATCH_FILE],
+    { capture: true },
+  );
+
   if (apply.status !== 0) {
     writeGatesLog(`[git apply failed]\n${apply.stderr}\n`);
     rollback({ baseBranch, baseSha, branch });
