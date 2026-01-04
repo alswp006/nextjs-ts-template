@@ -3,6 +3,7 @@ import fs from "node:fs";
 
 const PATCH_FILE = "patch.diff";
 const GATES_LOG = ".ai/gates.log";
+const GATES_LAST_LOG = ".ai/gates.last.log";
 
 function ensureAiDir() {
   fs.mkdirSync(".ai", { recursive: true });
@@ -50,14 +51,41 @@ function readEnv(name) {
 }
 
 function rollback({ baseBranch, baseSha, branch }) {
+  // gates 로그는 롤백 전에 반드시 보존
+  try {
+    if (fs.existsSync(GATES_LOG)) {
+      ensureAiDir();
+      fs.copyFileSync(GATES_LOG, GATES_LAST_LOG);
+    }
+  } catch {
+    // ignore
+  }
+
   // 작업 브랜치에서 변경사항 제거
   run("git", ["reset", "--hard", baseSha]);
-  run("git", ["clean", "-fd"]);
+
+  // 중요: 로그는 지우지 않도록 제외(-e)
+  run("git", [
+    "clean",
+    "-fd",
+    "-e",
+    ".ai/gates.log",
+    "-e",
+    ".ai/gates.last.log",
+    "-e",
+    ".ai/last-output.txt",
+    "-e",
+    "patch.diff",
+    "-e",
+    ".ai/PR_BODY.md",
+    "-e",
+    ".ai/PR_BODY.en.md",
+  ]);
 
   // 원래 브랜치로 복귀
   run("git", ["checkout", baseBranch]);
 
-  // 작업 브랜치 삭제(원래 브랜치와 같으면 삭제 안 함)
+  // 작업 브랜치 삭제
   if (branch && branch !== baseBranch) {
     run("git", ["branch", "-D", branch]);
   }
@@ -132,6 +160,9 @@ function main() {
   writeGatesLog(gates.log);
 
   if (!gates.ok) {
+    const tail = gates.log.split("\n").slice(-120).join("\n");
+    console.error("\n[ai-pr] gates tail (last 120 lines)\n");
+    console.error(tail);
     console.error("\n[ai-pr] quality gates failed. Rolling back.\n");
     rollback({ baseBranch, baseSha, branch });
     process.exit(gates.code || 1);
