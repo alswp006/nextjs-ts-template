@@ -1,0 +1,75 @@
+diff --git a/scripts/ai-run.mjs b/scripts/ai-run.mjs
+index 0000000..0000000 100644
+--- a/scripts/ai-run.mjs
++++ b/scripts/ai-run.mjs
+@@ -12,6 +12,7 @@ dotenv.config();
+ const DEFAULT_BUNDLE_PATH = ".ai/PROMPT_BUNDLE.md";
+ const DEFAULT_TASK_PATH = ".ai/TASK.md";
+ const PATCH_PATH = "patch.diff";
+ const PR_BODY_PATH = ".ai/PR_BODY.md";
++const PR_BODY_EN_PATH = ".ai/PR_BODY.en.md";
+ const LAST_OUTPUT_PATH = ".ai/last-output.txt";
+
+ function mustEnv(name) {
+   const v = process.env[name];
+@@ -39,6 +40,7 @@ async function rmIfExists(path) {
+
+ async function cleanupArtifacts() {
+   await rmIfExists(PATCH_PATH);
+   await rmIfExists(PR_BODY_PATH);
++  await rmIfExists(PR_BODY_EN_PATH);
+   await rmIfExists(LAST_OUTPUT_PATH);
+ }
+
+ function extractCodeBlock(text, lang) {
+@@ -67,6 +69,44 @@ function runCheck(cmd, args) {
+   const r = spawnSync(cmd, args, { stdio: "inherit" });
+   return r.status === 0;
+ }
+
++async function translatePrBodyToKorean({ client, model, text }) {
++  const instructions = [
++    "Translate the given GitHub pull request description into natural Korean.",
++    "Keep the Markdown structure and headings as-is.",
++    "Do not add new content. Do not remove content.",
++    "Preserve code spans/backticks, command names, filenames, and paths exactly.",
++    "If English technical terms are widely used (e.g., PR, lint, typecheck), you may keep them.",
++  ].join("\n");
++
++  const resp = await client.responses.create({
++    model,
++    instructions,
++    input: text,
++    temperature: 0.1,
++    max_output_tokens: 1200,
++    store: false,
++  });
++
++  const out = (resp.output_text ?? "").trimEnd();
++  if (!out) return text;
++  return out;
++}
++
+ async function callAgent({
+   client,
+   model,
+@@ -177,8 +217,20 @@ async function callAgent({
+   }
+
+   await fs.writeFile(PATCH_PATH, diff + "\n", "utf8");
+-  await fs.writeFile(PR_BODY_PATH, prBody + "\n", "utf8");
++
++  // Option 2) PR 본문을 마지막에 한국어로 번역하여 저장
++  // - 원문은 PR_BODY.en.md에 저장
++  // - 번역본은 PR_BODY.md에 저장
++  await fs.writeFile(PR_BODY_EN_PATH, prBody + "\n", "utf8");
++  const koBody = await translatePrBodyToKorean({
++    client,
++    model,
++    text: prBody,
++  });
++  await fs.writeFile(PR_BODY_PATH, koBody + "\n", "utf8");
+
+   // 실제 적용 가능 여부까지 선검증
+   const ok = runCheck("git", ["apply", "--check", "-p1", PATCH_PATH]);
+   if (!ok) {

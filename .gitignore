@@ -18,7 +18,8 @@ build/
 .env.*.local
 
 # ai local artifacts
+# AI local inputs & outputs
+.ai/PR_BODY*.md
+.ai/last-output.txt
 .ai/PROMPT_BUNDLE.md
 patch.diff
-.ai/PR_BODY.md
-.ai/last-output.txt
