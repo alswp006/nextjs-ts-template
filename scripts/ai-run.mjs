@@ -301,7 +301,11 @@ async function callAgent({
   await fs.writeFile(LAST_OUTPUT_PATH, out, "utf8");
 
   const diffBlocks = extractAllCodeBlocks(out, "diff");
-  const mdBlocks = extractAllCodeBlocks(out, "md");
+  const mdBlocks = [
+  ...extractAllCodeBlocks(out, "md"),
+  ...extractAllCodeBlocks(out, "markdown"),
+  ...extractAllCodeBlocks(out, "mdx"),
+];
 
   const diff = pickBestDiff(diffBlocks);
   const prBodyEn = pickBestMd(mdBlocks);
